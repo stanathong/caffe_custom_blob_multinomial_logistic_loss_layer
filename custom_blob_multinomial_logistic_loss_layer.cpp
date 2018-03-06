@@ -77,19 +77,10 @@ void CustomBlobMultinomialLogisticLossLayer<Dtype>::Forward_cpu(
 {
   const Dtype* prob_data = bottom[0]->cpu_data();
   const Dtype* label = bottom[1]->cpu_data();
-  //int num = bottom[0]->num();
   int nlabel = bottom[0]->shape(softmax_axis_);
   int dim = bottom[0]->count() / outer_num_;
   int count = 0;
   Dtype loss = 0;
-//  for (int i = 0; i < num; ++i) {
-//    int label = static_cast<int>(bottom_label[i]);
-//    Dtype prob = std::max(
-//        bottom_data[i * dim + label], Dtype(kLOG_THRESHOLD));
-//    loss -= log(prob);
-//  }
-//  top[0]->mutable_cpu_data()[0] = loss / num;
-
   for (int i = 0; i < outer_num_; ++i)	// N
   {
     for (int j = 0; j < inner_num_; j++) // HxW
@@ -120,7 +111,7 @@ void CustomBlobMultinomialLogisticLossLayer<Dtype>::Forward_cpu(
     top[0]->mutable_cpu_data()[0] = loss / outer_num_;
   }
   if (top.size() == 2) {
-    top[1]->ShareData(prob_);
+    top[1]->ShareData(*bottom[0]);
   }
 }
 
@@ -129,29 +120,6 @@ void CustomBlobMultinomialLogisticLossLayer<Dtype>::Backward_cpu(
     const vector<Blob<Dtype>*>& top, const vector<bool>& propagate_down,
     const vector<Blob<Dtype>*>& bottom) 
 {
-/*
-  if (propagate_down[1]) 
-  {
-    LOG(FATAL) << this->type()
-               << " Layer cannot backpropagate to label inputs.";
-  }
-  if (propagate_down[0]) 
-  {
-    const Dtype* bottom_data = bottom[0]->cpu_data();
-    const Dtype* bottom_label = bottom[1]->cpu_data();
-    Dtype* bottom_diff = bottom[0]->mutable_cpu_diff();
-    int num = bottom[0]->num();
-    int dim = bottom[0]->count() / bottom[0]->num();
-    caffe_set(bottom[0]->count(), Dtype(0), bottom_diff);
-    const Dtype scale = - top[0]->cpu_diff()[0] / num;
-    for (int i = 0; i < num; ++i) {
-      int label = static_cast<int>(bottom_label[i]);
-      Dtype prob = std::max(
-          bottom_data[i * dim + label], Dtype(kLOG_THRESHOLD));
-      bottom_diff[i * dim + label] = scale / prob;
-    }
-  }
-*/
   if (propagate_down[1]) 
   {
     LOG(FATAL) << this->type()
@@ -200,10 +168,13 @@ void CustomBlobMultinomialLogisticLossLayer<Dtype>::Backward_cpu(
     }
     // Scale gradient
     const Dtype loss_weight = top[0]->cpu_diff()[0];
-    if (normalize_) {
-      caffe_scal(prob_.count(), loss_weight / count, bottom_diff);
-    } else {
-      caffe_scal(prob_.count(), loss_weight / outer_num_, bottom_diff);
+    if (normalize_) 
+	{
+      caffe_scal(bottom[0]->count(), loss_weight / count, bottom_diff);
+    } 
+	else 
+	{
+      caffe_scal(bottom[0]->count(), loss_weight / outer_num_, bottom_diff);
     }
   }
 }
