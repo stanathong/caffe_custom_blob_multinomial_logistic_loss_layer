@@ -8,6 +8,18 @@ This repository contains only a new layer in Caffe to be used in conjunction wit
 
 The original Caffe's Multinomial Logistic Loss layer expects a label blob to have a size of `Nx1x1x1` i.e. one label per one image. In my case, I would like to customise the probabilies obtained from the Softmax layer so I need a different Multinomial Logistic Loss layer, and that the use of __SoftmaxWithLoss__ layer is not possible.<br>
 
+### Build
+
+1. Place the file 'custom_blob_multinomial_logistic_loss_layer.hpp' into `$CAFFE_SEGNET_ROOT\include\caffe\layers`.<br>
+2. Place the file 'custom_blob_multinomial_logistic_loss_layer.cpp' into `$CAFFE_SEGNET_ROOT\src\caffe\layers`.<br>
+3. Open the terminal and cd to `$CAFFE_SEGNET_ROOT` and build the code:<br>
+```
+make clean
+make all
+```
+
+### Usage
+
 Below is an example use of this new layer after the Softmax layer. As you can see, this is equivalent to using _SoftmaxWithLoss_ but allows a flexibility to modify the softmax results before computing loss.<br>
 
 ```
