@@ -42,4 +42,4 @@ layer {
 }
 ```
 
-_NB:_ This repository only contains a CPU implementation.
+
