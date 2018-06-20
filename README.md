@@ -11,7 +11,7 @@ The original Caffe's Multinomial Logistic Loss layer expects a label blob to hav
 ### Build
 
 1. Place the file 'custom_blob_multinomial_logistic_loss_layer.hpp' into `$CAFFE_SEGNET_ROOT\include\caffe\layers`.<br>
-2. Place the file 'custom_blob_multinomial_logistic_loss_layer.cpp' into `$CAFFE_SEGNET_ROOT\src\caffe\layers`.<br>
+2. Place the file 'custom_blob_multinomial_logistic_loss_layer.cpp' and 'custom_blob_multinomial_logistic_loss_layer.cu' into `$CAFFE_SEGNET_ROOT\src\caffe\layers`.<br>
 3. Open the terminal and cd to `$CAFFE_SEGNET_ROOT` and build the code:<br>
 ```
 make clean
